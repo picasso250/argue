@@ -57,7 +57,8 @@
 </head>
 
 <body>
-    <div style="    margin: 2%;
+
+    <div style="margin: 2%;
     border-bottom: 1px solid;
     color: #5f5b5b;">
 
@@ -70,7 +71,8 @@
         <h2>辩论网</h2>
     </div>
 
-    <div id="conentWrap"><?php include $_inner_tpl_list['content'] ?></div>
+    <div id="conentWrap" style="margin: 2%"><?php include $_inner_tpl_list['content'] ?></div>
+
 </body>
 
 </html>
