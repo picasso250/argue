@@ -77,12 +77,12 @@ function choose_side(time,side,id,e) {
 <tr class="value-bar">
 <td>开始观点</td>
 <td>
-    <a href="javascript:void(0)" onclick="choose_side('begin',0,<?= $argue['id'] ?>,this);" class="choose-side-btn" style="float:left">◀</a>
-    <div class="positive-bar"><div style="width:<?= $argue_content['begin'][0] ?>%"><?= $argue_content['begin'][0] ?>%</div></div>
+    <a href="javascript:void(0)" onclick="choose_side('begin',0,<?= $argue['id'] ?>,this);" class="choose-side-btn" style="float:left" >◀</a>
+    <div style="    text-align: right;">(<?= $argue_content['begin'][0] ?>%) <?= $argue_content['begin_number'][0] ?> 人</div>
 </td>
 <td>
-    <a href="javascript:void(0)" onclick="choose_side('begin',1,<?= $argue['id'] ?>);" class="choose-side-btn" style="float:right">▶</a>
-    <div class="negative-bar"><div style="width:<?= $argue_content['begin'][1] ?>%"><?= $argue_content['begin'][1] ?>%</div></div>
+    <a href="javascript:void(0)" onclick="choose_side('begin',1,<?= $argue['id'] ?>,this);" class="choose-side-btn" style="float:right">▶</a>
+    <div><?= $argue_content['begin_number'][1] ?> 人 (<?= $argue_content['begin'][1] ?>%)</div>
 </td>
 </tr>
 
@@ -101,16 +101,16 @@ function choose_side(time,side,id,e) {
 </td>
 </tr>
 
-<?php foreach ($argue_content['point_list'] as $key => $point): ?>
+<?php /* 论点 */ foreach ($point_list as $key => $point): ?>
 <tr>
-    <?php if ($key==0):?> <td rowspan="<?= count($argue_content['point_list']) ?>">论点</td> <?php endif ?>
+    <?php if ($key==0):?> <td rowspan="<?= count($point_list) ?>">论点</td> <?php endif ?>
     <td>
         <p><?= $point['stand'] == 0 ? ('论点 '.($key+1)) : '反驳' ?></p>
-        <div class="point-view-box"><?= htmlspecialchars($point['stand'] == 0 ? $point['content'] : $point['opposite']) ?></div>
+        <div class="point-view-box"><?= htmlspecialchars($point['stand'] == 0 ? $point['content']['content'] : $point['opposite']['content']) ?></div>
     </td>
     <td>
         <p><?= $point['stand'] == 1 ? ('论点 '.($key+1)) : '反驳' ?></p>
-        <div class="point-view-box"><?= htmlspecialchars($point['stand'] == 1 ? $point['content'] : $point['opposite']) ?></div>
+        <div class="point-view-box"><?= htmlspecialchars($point['stand'] == 1 ? $point['content']['content'] : $point['opposite']['content']) ?></div>
     </td>
 </tr>
 <?php endforeach ?>
