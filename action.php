@@ -8,6 +8,10 @@ function action_index()
     $debugbar["messages"]->addMessage("hello world!");
     render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/index.php']);
 }
+
+function action_login() {
+    render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/login.php']);    
+}
 function action_new_argue()
 {
     if (!isset($_POST['title'])) die("no title");

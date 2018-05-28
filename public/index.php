@@ -38,10 +38,15 @@ if ($_ENV['DEBUG']) {
     $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($pdo));
 }
 
-regex_router([
+$found = regex_router([
     'GET /' => 'action_index',
     'GET /install' => 'action_install',
     'POST /new_argue' => 'action_new_argue',
     'GET /a/(\d+)' => 'action_argue',
     'POST /ajax_do' => 'action_ajax_do',
+    'GET /login' => 'action_login',
 ]);
+if (!$found) {
+    http_response_code(404);
+    die("404");
+}

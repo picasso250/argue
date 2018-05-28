@@ -14,7 +14,6 @@
     <meta name="HandheldFriendly" content="true">
     <meta name="apple-mobile-web-app-title" content="Step-PHP">
 
-
     <link rel="stylesheet" href="/vendor/bootstrap-4.1.1-dist/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
@@ -23,11 +22,26 @@
 
     <!-- development version, includes helpful console warnings -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    
+
+    <script>
+    // 当用户操作到需要登录的操作时，登录
+    $(document).ajaxComplete( function (e,xhr) {
+        if (xhr.responseText === 'need_login') {
+            console.log('need_login');
+            location.href='/login?back='+encodeURIComponent(location.href);
+        }
+    });
+    </script>
+
 </head>
 
 <body>
-    <?php include $_inner_tpl_list['content'] ?>
+    <div style="    margin: 2%;
+    border-bottom: 1px solid;
+    color: #5f5b5b;">
+        <h2>辩论网</h2>
+    </div>
+    <div id="conentWrap"><?php include $_inner_tpl_list['content'] ?></div>
 </body>
 
 </html>
