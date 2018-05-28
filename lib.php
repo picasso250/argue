@@ -78,6 +78,11 @@ function sql_timestamp($time = null) {
     return date('Y-m-d H:i:s', $time);
 }
 
+function echo_json($json) {
+    header('Content-Type: application/javascript');
+    echo json_encode($json, JSON_UNESCAPED_UNICODE);
+}
+
 // service
 function _($name, $value = null) {
     static $lazy;
