@@ -50,7 +50,7 @@ function action_argue($params)
     $argue = ORM::for_table('argue')->find_one($id);
     // $argue = ['id'=>1,'title' => 'test'];
     $argue_content = json_decode($argue['content'],true);
-    if (!isset($argue_content['summary'])) $argue_content['summary'] = ['',''];
+    if (!isset($argue_content['summary'])) $argue_content['summary'] = [[],[]];
     // $argue_content = [
     //     // 'begin'=>[11,100],'end'=> [22,100],
     //     'begin_number'=>[100,11],'end_number'=> [22,100],
@@ -95,6 +95,7 @@ function action_ajax_do()
     // login check
     $login_check_list = [
         'choose_side',
+        'edit_summary',
     ];
     if (in_array($action, $login_check_list)) {
         $cur_user = cur_user();
@@ -110,6 +111,16 @@ function _action_choose_side($id)
 {
     $argue = find_or_404('argue', $id);
     $r = argue_choose_side($argue, $GLOBALS['cur_user'], get_php_input());
+    if(is_string($r)) {
+        echo_json(['code'=>1, 'msg'=>$r]);
+    } else {
+        echo_json(['code'=>0, 'data'=>['numbers'=>$r,'ratios'=>_number_to_ratio($r)]]);
+    }
+}
+// 编辑 综述
+function _action_edit_summary($id) {
+    $argue = find_or_404('argue', $id);
+    $r = argue_edit_summary($argue, $GLOBALS['cur_user']);
     if(is_string($r)) {
         echo_json(['code'=>1, 'msg'=>$r]);
     } else {

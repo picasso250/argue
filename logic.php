@@ -24,6 +24,7 @@ function login($name,$id_num) {
 
 
 /**
+ * 选边站
  * @return array|string
  */
 function argue_choose_side($argue, $cur_user, $_side) {
@@ -75,6 +76,32 @@ function _number_to_ratio($numbers) {
     // if ($ratios[1] > 50) $ratios[1] -= 50; else $ratios[1] = 0;
     return $ratios;
 }
+/**
+ * 编辑 综述
+ * @return [cur_user_id,total_up,content]|string
+ */
+function argue_edit_summary($argue, $cur_user) {
+    $side = _post('side');
+    $content = _post('content');
+    if ($side==='') die("no side");
+    if ($content==='') die("no content");
+    $argue_content = json_decode($argue, true);
+    if (!isset($argue_content['summary'])) {
+        $argue_content['summary'] = [[],[]];
+    }
+    if ($argue_content['summary'][$side]) {
+        list($old_user_id, $old_total_up, $_) = $argue_content['summary'][$side];
+        $old_user = ORM::for_table('user')->find_one($old_user_id);
+        if ($old_user->total_up > $cur_user->total_up) {
+            return "您的积分不够编辑";
+        }
+    }
+    $argue_content['summary'][$side] = [$cur_user->id,$cur_user->total_up,$content];
+    $argue->content = json_encode($argue_content);
+    $argue->save();
+    return $argue_content['summary'][$side];
+}
+
 function user_log($user_id,$argue_id,$action,$data) {
     $l = ORM::for_table('user_log')->create();
     $l->user_id = $user_id;

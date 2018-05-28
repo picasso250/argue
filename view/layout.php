@@ -51,7 +51,7 @@
     }, false);
     })();
 
-    console.log(<?= json_encode($_SERVER) ?>);
+    console.log(<?= $_ENV['DEBUG']?json_encode($_SERVER):0 ?>);
     </script>
 
 </head>

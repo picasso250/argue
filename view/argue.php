@@ -35,21 +35,20 @@
 
 <script>
 function prepare_edit_summary(e) {
-    $(e).prev().show().prev().hide();
-    $(e).hide().next().show();
+    // $(e).prev().show().prev().hide();
+    // $(e).hide().next().show();
 }
-function edit_summary(e,id) {
-    var data = $(e).prev().prev().find('textarea').val();
-    $.post('/ajax_do?action=edit_summary&id='+id, data, function (ret) {
-    });
-}
+
 $(function () {
     var app = new Vue({
         el: '#point_table',
         data: {
+            me: <?= json_encode($GLOBALS['cur_user']->as_array()) ?>,
             id: <?= $argue['id'] ?>,
             'begin': <?= json_encode($argue_content['begin']) ?>,
-            'end': <?= json_encode($argue_content['end']) ?>
+            'end': <?= json_encode($argue_content['end']) ?>,
+            summary_edit_mode: false,
+            summary: <?= json_encode($argue_content['summary']) ?>,
         },
         methods: {
             choose_side: function (event) {
@@ -63,6 +62,28 @@ $(function () {
                         alert(ret.msg);
                     }
                 }, 'json');
+            },
+            prepare_edit_summary: function () {
+                if ( this.summary[0].length===0 || this.summary[0][1] <= this.me.total_up)
+                    this.summary_edit_mode=true;
+                else
+                    alert('您的积分不够编辑');
+            },
+            edit_summary: function (event) {
+                var side = $(event.target).data('side');
+                var data = {
+                    side: side,
+                    content: this.summary[side],
+                };
+                var id = this.id;
+                var that = this;
+                $.post('/ajax_do?action=edit_summary&id='+id, data, function (ret) {
+                    if (ret.code === 0) {
+                        that.summary[side] = ret.data[2];
+                    } else {
+                        alert(ret.msg);
+                    }
+                });
             }
         }
     });
@@ -102,15 +123,17 @@ $(function () {
 <tr>
 <td>综述</td>
 <td>
-    <div><?= htmlentities($argue_content['summary'][0]) ?></div>
-    <div style="display:none;width:100%;"><textarea style="width:100%;"><?= $argue_content['summary'][0] ?></textarea></div>
-    <a href="javascript:void(0);" class="sm" onclick="prepare_edit_summary(this)">编辑</a>
-    <a href="javascript:void(0);" class="btn btn-light btn-sm" onclick="edit_summary(this,<?= $argue['id'] ?>)" style="display:none">提交</a>
+    <div v-if="!summary_edit_mode">
+        <div><?= $argue_content['summary'][0]? htmlentities($argue_content['summary'][0][2]):'' ?></div>
+        <a href="javascript:void(0);" class="sm" v-on:click="prepare_edit_summary">编辑</a>
+    </div>
+    <div v-else>
+        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[0]"></textarea></div>
+        <a href="javascript:void(0);" class="btn btn-light btn-sm" v:on-click="edit_summary" data-side="0">提交</a>
+    </div>
 </td>
 <td>
-    <div><?= htmlentities($argue_content['summary'][1]) ?></div>
-    <textarea style="display:none"><?= $argue_content['summary'][1] ?></textarea>
-    <a href="javascript:void(0);" class="btn btn-light btn-sm" onclick="prepare_edit_summary(this)">编辑综述</a>
+    <div></div>
 </td>
 </tr>
 
