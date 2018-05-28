@@ -34,10 +34,6 @@
 </style>
 
 <script>
-function prepare_edit_summary(e) {
-    // $(e).prev().show().prev().hide();
-    // $(e).hide().next().show();
-}
 
 $(function () {
     var app = new Vue({
@@ -47,7 +43,7 @@ $(function () {
             id: <?= $argue['id'] ?>,
             'begin': <?= json_encode($argue_content['begin']) ?>,
             'end': <?= json_encode($argue_content['end']) ?>,
-            summary_edit_mode: false,
+            summary_edit_mode: [false,false],
             summary: <?= json_encode($argue_content['summary']) ?>,
         },
         methods: {
@@ -63,27 +59,32 @@ $(function () {
                     }
                 }, 'json');
             },
-            prepare_edit_summary: function () {
-                if ( this.summary[0].length===0 || this.summary[0][1] <= this.me.total_up)
-                    this.summary_edit_mode=true;
+            prepare_edit_summary: function (event) {
+                var side = $(event.target).parent().data('side');
+                console.log(side,"0",0)
+                if ( this.summary[side].length===0 || this.summary[side][1] <= this.me.total_up)
+                    this.$set(this.summary_edit_mode, side, true);
                 else
                     alert('您的积分不够编辑');
             },
             edit_summary: function (event) {
-                var side = $(event.target).data('side');
+                var side = $(event.target).parent().data('side');
+                var content = this["summary"][side][2];
+                if (content.trim().length === 0) alert('综述不能为空');
                 var data = {
                     side: side,
-                    content: this.summary[side],
+                    content: content,
                 };
                 var id = this.id;
                 var that = this;
                 $.post('/ajax_do?action=edit_summary&id='+id, data, function (ret) {
                     if (ret.code === 0) {
-                        that.summary[side] = ret.data[2];
+                        that.summary[side] = ret.data;
+                        that.$set(that.summary_edit_mode, side, false);
                     } else {
                         alert(ret.msg);
                     }
-                });
+                }, 'json');
             }
         }
     });
@@ -123,17 +124,26 @@ $(function () {
 <tr>
 <td>综述</td>
 <td>
-    <div v-if="!summary_edit_mode">
-        <div><?= $argue_content['summary'][0]? htmlentities($argue_content['summary'][0][2]):'' ?></div>
+    <div v-if="!(summary_edit_mode[0])" data-side="0">
+        <pre>{{ summary[0]? summary[0][2] : '' }}</pre>
         <a href="javascript:void(0);" class="sm" v-on:click="prepare_edit_summary">编辑</a>
     </div>
-    <div v-else>
-        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[0]"></textarea></div>
-        <a href="javascript:void(0);" class="btn btn-light btn-sm" v:on-click="edit_summary" data-side="0">提交</a>
+    <div v-else data-side="0">
+        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[0][2]"></textarea></div>
+        <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_summary" >提交</a>
+        <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="$set(summary_edit_mode,0,false)" >取消</a>
     </div>
 </td>
 <td>
-    <div></div>
+    <div v-if="!(summary_edit_mode[1])" data-side="1">
+        <pre>{{ summary[1]? summary[1][2] : '' }}</pre>
+        <a href="javascript:void(0);" class="sm" v-on:click="prepare_edit_summary">编辑</a>
+    </div>
+    <div v-else data-side="1">
+        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[1][2]"></textarea></div>
+        <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_summary" >提交</a>
+        <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="$set(summary_edit_mode,1,false)" >取消</a>
+    </div>
 </td>
 </tr>
 

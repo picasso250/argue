@@ -124,6 +124,6 @@ function _action_edit_summary($id) {
     if(is_string($r)) {
         echo_json(['code'=>1, 'msg'=>$r]);
     } else {
-        echo_json(['code'=>0, 'data'=>['numbers'=>$r,'ratios'=>_number_to_ratio($r)]]);
+        echo_json(['code'=>0, 'data'=>$r]);
     }
 }

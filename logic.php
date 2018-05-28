@@ -85,7 +85,7 @@ function argue_edit_summary($argue, $cur_user) {
     $content = _post('content');
     if ($side==='') die("no side");
     if ($content==='') die("no content");
-    $argue_content = json_decode($argue, true);
+    $argue_content = json_decode($argue->content, true);
     if (!isset($argue_content['summary'])) {
         $argue_content['summary'] = [[],[]];
     }
