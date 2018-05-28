@@ -58,6 +58,7 @@ function action_argue($params)
     // ];
     argue_number_to_ratio($argue_content);
     $point_list= [['stand'=>0,'content'=>['content'=>'a'],'opposite'=>['content'=>'b']]];
+    // $point_list = argue_get_point_list(10);
     $data = compact('argue', 'argue_content', 'point_list');
     render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/argue.php'], $data);
 }
@@ -102,28 +103,10 @@ function action_ajax_do()
         if (!$cur_user) die("need_login");
         $GLOBALS['cur_user'] = $cur_user;
     }
+
+    require "action_argue_ajax.php";
+
     $func = "_action_".$_GET['action'];
     if (!function_exists($func)) die("no func");
     return $func($_GET['id']);
-}
-// 选边站
-function _action_choose_side($id)
-{
-    $argue = find_or_404('argue', $id);
-    $r = argue_choose_side($argue, $GLOBALS['cur_user'], get_php_input());
-    if(is_string($r)) {
-        echo_json(['code'=>1, 'msg'=>$r]);
-    } else {
-        echo_json(['code'=>0, 'data'=>['numbers'=>$r,'ratios'=>_number_to_ratio($r)]]);
-    }
-}
-// 编辑 综述
-function _action_edit_summary($id) {
-    $argue = find_or_404('argue', $id);
-    $r = argue_edit_summary($argue, $GLOBALS['cur_user']);
-    if(is_string($r)) {
-        echo_json(['code'=>1, 'msg'=>$r]);
-    } else {
-        echo_json(['code'=>0, 'data'=>$r]);
-    }
 }

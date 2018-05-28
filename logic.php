@@ -22,6 +22,11 @@ function login($name,$id_num) {
     $_SESSION['cur_user_id'] = $user->id;
 }
 
+// ==== 辩题 ====
+
+function argue_get_point_list($n) {
+    ORM::for_table('argue')->order_by_desc('up_vote');
+}
 
 /**
  * 选边站
@@ -99,6 +104,9 @@ function argue_edit_summary($argue, $cur_user) {
     $argue_content['summary'][$side] = [$cur_user->id,$cur_user->total_up,$content];
     $argue->content = json_encode($argue_content);
     $argue->save();
+
+    $up = $cur_user->total_up;
+    user_log($cur_user->id, $argue->id, 'edit_summary', json_encode(compact('side', 'up', 'content')));
     return $argue_content['summary'][$side];
 }
 

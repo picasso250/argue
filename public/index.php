@@ -47,10 +47,6 @@ $dotenv->required(['DATABASE_DSN', 'DB_USER', 'DB_PASS'])->notEmpty();
 ORM::configure($_ENV['DATABASE_DSN']);
 ORM::configure('username', $_ENV['DB_USER']);
 ORM::configure('password', $_ENV['DB_PASS']);
-if ($_ENV['DEBUG']) {
-    $pdo = new DebugBar\DataCollector\PDO\TraceablePDO(ORM::get_db());
-    $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($pdo));
-}
 
 $cur_user = cur_user();
 
