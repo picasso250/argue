@@ -28,8 +28,8 @@ function login($name,$id_num) {
  */
 function argue_choose_side($argue, $cur_user, $_side) {
     list($time,$side) = explode(':',$_side);
-    if (!in_array($side, ['begin', 'end'])) {
-        die("side must be begin or end");
+    if (!in_array($time, ['begin', 'end'])) {
+        die("time must be begin or end");
     }
     // 用户的初始立场不容许改变
     $data = ['user_id'=>$cur_user->id, 'argue_id'=>$argue->id, 'time'=>$time];
@@ -37,11 +37,11 @@ function argue_choose_side($argue, $cur_user, $_side) {
     if ($us && 'begin'==$time) {
         return '初始态度不能改变';
     }
-    $us = ORM::for_table('user_side')->where($data)->delete();
+    $us = ORM::for_table('user_side')->where($data)->delete_many();
     $us = ORM::for_table('user_side')->create();
     $us->set($data);
     $us->side = $side;
-    $us->created = mysql_timestamp();
+    $us->created = sql_timestamp();
     $us->save();
     
     // 汇总
@@ -75,6 +75,7 @@ function _number_to_ratio($numbers) {
 function user_log($user_id,$argue_id,$action,$data) {
     $l = ORM::for_table('user_log')->create();
     $l->user_id = $user_id;
+    $l->argue_id = $argue_id;
     $l->action = $action;
     $l->data = $data;
     $l->created = sql_timestamp();

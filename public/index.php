@@ -8,6 +8,8 @@ require ROOT.'/lib.php';
 require ROOT.'/action.php';
 
 use DebugBar\StandardDebugBar;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Handler\JsonResponseHandler;
 
 $dotenv = new Dotenv\Dotenv(ROOT);
 $dotenv->load();
@@ -24,6 +26,18 @@ if ($_ENV['DEBUG']) {
 
     $whoops = new \Whoops\Run;
     $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+
+    // Add a special handler to deal with AJAX requests with an
+    // equally-informative JSON response. Since this handler is
+    // first in the stack, it will be executed before the error
+    // page handler, and will have a chance to decide if anything
+    // needs to be done.
+    if (Whoops\Util\Misc::isAjaxRequest()) {
+        $j = new JsonResponseHandler;
+        $j->addTraceToOutput(true);
+        $whoops->pushHandler($j);
+    }
+
     $whoops->register();
 }
 

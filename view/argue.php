@@ -54,6 +54,7 @@ $(function () {
         methods: {
             choose_side: function (event) {
                 var e = event.target,time=$(e).data('time'),side=$(e).data('side'),id=this.id;
+                console.log(e,time,side,id)
                 $.post('/ajax_do?action=choose_side&id='+id, time+':'+side, function (ret) {
                     if (ret.code===0) {
                         this.ratio = ret.data;
@@ -88,11 +89,11 @@ $(function () {
 <tr class="value-bar">
 <td>开始观点</td>
 <td>
-    <a href="javascript:void(0)" v-on:click="choose_side" class="choose-side-btn" style="float:left" >◀</a>
+    <a href="javascript:void(0)" v-on:click="choose_side" class="choose-side-btn" style="float:left"  data-time="begin" data-side="0">◀</a>
     <div style="text-align: right;">({{ begin.ratios[0] }}%) {{ begin.numbers[0] }} 人</div>
 </td>
 <td>
-    <a href="javascript:void(0)" v-on:click="choose_side" class="choose-side-btn" style="float:right">▶</a>
+    <a href="javascript:void(0)" v-on:click="choose_side" class="choose-side-btn" style="float:right" data-time="begin" data-side="1">▶</a>
     <div>{{ begin.ratios[1] }} 人 ({{ begin.numbers[1] }}%)</div>
 </td>
 </tr>
