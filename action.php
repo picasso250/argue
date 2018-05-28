@@ -9,9 +9,30 @@ function action_index()
     render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/index.php']);
 }
 
+// 登录
 function action_login() {
-    render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/login.php']);    
+    $msgs = [];
+    $name = '';
+    $id_num = '';
+    if (is_post()) {
+        $name = _post('name');
+        $id_num = _post('id_num');
+        if (!$name) die("姓名不能为空");
+        if (!$id_num) die("身份证号码不能为空");
+        login($name,$id_num);
+        $back = _get('back');
+        if ($back) {
+            if (strpos($back, '/login')===0) {
+                // do nothing
+            } else {
+                redirect($back);
+            }
+        }
+    } else {
+        render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/login.php'], compact('msgs', 'name', 'id_num'));
+    }
 }
+
 function action_new_argue()
 {
     if (!isset($_POST['title'])) die("no title");
@@ -21,6 +42,7 @@ function action_new_argue()
     $argue->save();
     redirect("/a/$argue->id");
 }
+
 // 查看辩题
 function action_argue($params)
 {

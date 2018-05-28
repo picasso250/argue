@@ -20,6 +20,10 @@ function redirect($url) {
     header("location:$url");
 }
 
+function is_post() {
+    return $_SERVER['REQUEST_METHOD'] == 'POST';
+}
+
 // $routers: [method_and_regex => func_or_Controller@Action]
 // when 404, return false
 function regex_router($routers)

@@ -1,10 +1,27 @@
 <?php
+
+// ==== 登录/用户相关 ====
+
 function cur_user() {
     if (!isset($_SESSION['cur_user_id'])) return null;
     $id = $_SESSION['cur_user_id'];
     if (!$id) return null;
-    return ORM::for_table($id)->find_one($id);
+    return ORM::for_table('user')->find_one($id);
 }
+function login($name,$id_num) {
+    $data = compact('name','id_num');
+    $user = ORM::for_table('user')->where($data)->find_one();
+    if ($user) {
+        // do nothing
+    } else {
+        $user = ORM::for_table('user')->create();
+        $user->set($data);
+        $user->created = sql_timestamp();
+        $user->save();
+    }
+    $_SESSION['cur_user_id'] = $user->id;
+}
+
 
 /**
  * @return array|string
