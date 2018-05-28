@@ -60,13 +60,16 @@ function argue_choose_side($argue, $cur_user, $_side) {
 }
 function argue_number_to_ratio(&$argue_detail) {
     foreach (['begin', 'end'] as $key) {
-        $argue_detail[$key]['ratios'] = _number_to_ratio($argue_detail[$key.'_number']);
+        $k = $key.'_number';
+        if (!isset($argue_detail[$k])) $argue_detail[$k] = [0,0];
+        $argue_detail[$key]['ratios'] = _number_to_ratio($argue_detail[$k]);
         $argue_detail[$key]['numbers'] = $argue_detail[$key.'_number'];
     }
 }
 function _number_to_ratio($numbers) {
     list($positive, $negative) = $numbers;
     $total = $positive + $negative;
+    if ($total == 0) return [0,0];
     $ratios = [round($positive/$total*100),round($negative/$total*100)];
     // if ($ratios[0] > 50) $ratios[0] -= 50; else $ratios[0] = 0;
     // if ($ratios[1] > 50) $ratios[1] -= 50; else $ratios[1] = 0;

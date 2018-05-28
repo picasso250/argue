@@ -55,9 +55,10 @@ $(function () {
             choose_side: function (event) {
                 var e = event.target,time=$(e).data('time'),side=$(e).data('side'),id=this.id;
                 console.log(e,time,side,id)
+                var that = this;
                 $.post('/ajax_do?action=choose_side&id='+id, time+':'+side, function (ret) {
                     if (ret.code===0) {
-                        this.ratio = ret.data;
+                        that[time] = ret.data;
                     } else {
                         alert(ret.msg);
                     }
@@ -94,7 +95,7 @@ $(function () {
 </td>
 <td>
     <a href="javascript:void(0)" v-on:click="choose_side" class="choose-side-btn" style="float:right" data-time="begin" data-side="1">▶</a>
-    <div>{{ begin.ratios[1] }} 人 ({{ begin.numbers[1] }}%)</div>
+    <div>{{ begin.numbers[1] }} 人 ({{ begin.ratios[1] }}%)</div>
 </td>
 </tr>
 
@@ -129,8 +130,14 @@ $(function () {
 
 <tr class="value-bar">
 <td>结束观点</td>
-<td><div class="positive-bar"><div style="width:<?= 1||$argue_content['end'] ?>%"><?= 1||$argue_content['end'] ?>%</div></div></td>
-<td><div class="negative-bar"><div style="width:<?= 1||$argue_content['end'] ?>%"><?= 1||$argue_content['end'] ?>%</div></div></td>
+<td>
+    <a href="javascript:void(0)" v-on:click="choose_side" class="choose-side-btn" style="float:left"  data-time="end" data-side="0">◀</a>
+    <div style="text-align: right;">({{ end.ratios[0] }}%) {{ end.numbers[0] }} 人</div>
+</td>
+<td>
+    <a href="javascript:void(0)" v-on:click="choose_side" class="choose-side-btn" style="float:right" data-time="end" data-side="1">▶</a>
+    <div>{{ end.numbers[1] }} 人 ({{ end.ratios[1] }}%)</div>
+</td>
 </tr>
 
 </tbody>
