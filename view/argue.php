@@ -43,22 +43,33 @@ function edit_summary(e,id) {
     $.post('/ajax_do?action=edit_summary&id='+id, data, function (ret) {
     });
 }
-function choose_side(time,side,id,e) {
-    $.post('/ajax_do?action=choose_side&id='+id, time+':'+side, function (ret) {
-        var a = ret.split(',');
-        $('#'+time+'Bar0,#'+time+'Bar1').css('width',0);
-        if (a[0]>50) {
-            $('#'+time+'Bar0').css('width',($a[0]-50)+'%');
-        }
-        if (a[1]>50) {
-            $('#'+time+'Bar1').css('width',($a[1]-50)+'%');
+$(function () {
+    var app = new Vue({
+        el: '#point_table',
+        data: {
+            id: <?= $argue['id'] ?>,
+            'begin': <?= json_encode($argue_content['begin']) ?>,
+            'end': <?= json_encode($argue_content['end']) ?>
+        },
+        methods: {
+            choose_side: function (event) {
+                var e = event.target,time=$(e).data('time'),side=$(e).data('side'),id=this.id;
+                $.post('/ajax_do?action=choose_side&id='+id, time+':'+side, function (ret) {
+                    if (ret.code===0) {
+                        this.ratio = ret.data;
+                    } else {
+                        alert(ret.msg);
+                    }
+                },'json');
+            }
         }
     });
-}
+});
+
 </script>
 
 <h1><?= htmlentities($argue['title']) ?></h1>
-<table class="table">
+<table class="table" id="point_table">
 
 <colgroup>
   <col style="width:6rem; text-align:right;">
@@ -77,12 +88,12 @@ function choose_side(time,side,id,e) {
 <tr class="value-bar">
 <td>开始观点</td>
 <td>
-    <a href="javascript:void(0)" onclick="choose_side('begin',0,<?= $argue['id'] ?>,this);" class="choose-side-btn" style="float:left" >◀</a>
-    <div style="    text-align: right;">(<?= $argue_content['begin'][0] ?>%) <?= $argue_content['begin_number'][0] ?> 人</div>
+    <a href="javascript:void(0)" v-on:click="choose_side" class="choose-side-btn" style="float:left" >◀</a>
+    <div style="text-align: right;">({{ begin.ratios[0] }}%) {{ begin.numbers[0] }} 人</div>
 </td>
 <td>
-    <a href="javascript:void(0)" onclick="choose_side('begin',1,<?= $argue['id'] ?>,this);" class="choose-side-btn" style="float:right">▶</a>
-    <div><?= $argue_content['begin_number'][1] ?> 人 (<?= $argue_content['begin'][1] ?>%)</div>
+    <a href="javascript:void(0)" v-on:click="choose_side" class="choose-side-btn" style="float:right">▶</a>
+    <div>{{ begin.ratios[1] }} 人 ({{ begin.numbers[1] }}%)</div>
 </td>
 </tr>
 
@@ -117,8 +128,8 @@ function choose_side(time,side,id,e) {
 
 <tr class="value-bar">
 <td>结束观点</td>
-<td><div class="positive-bar"><div style="width:<?= $argue_content['end'][0] ?>%"><?= $argue_content['end'][0] ?>%</div></div></td>
-<td><div class="negative-bar"><div style="width:<?= $argue_content['end'][1] ?>%"><?= $argue_content['end'][1] ?>%</div></div></td>
+<td><div class="positive-bar"><div style="width:<?= 1||$argue_content['end'] ?>%"><?= 1||$argue_content['end'] ?>%</div></div></td>
+<td><div class="negative-bar"><div style="width:<?= 1||$argue_content['end'] ?>%"><?= 1||$argue_content['end'] ?>%</div></div></td>
 </tr>
 
 </tbody>

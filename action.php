@@ -17,17 +17,21 @@ function action_new_argue()
     $argue->save();
     redirect("/a/$argue->id");
 }
+// 查看辩题
 function action_argue($params)
 {
     $id = $params[1];
     $argue = ORM::for_table('argue')->find_one($id);
     // $argue = ['id'=>1,'title' => 'test'];
     $argue_content = [
-        'begin'=>[11,100],'end'=> [22,100], 
+        // 'begin'=>[11,100],'end'=> [22,100],
+        'begin_number'=>[100,11],'end_number'=> [22,100],
         'summary'=> ['中文','zz'],
-        'point_list'=>[['stand'=>0,'content'=>'a','opposite'=>'b']]
     ];
-    render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/argue.php'], compact('argue', 'argue_content'));
+    argue_number_to_ratio($argue_content);
+    $point_list= [['stand'=>0,'content'=>['content'=>'a'],'opposite'=>['content'=>'b']]];
+    $data = compact('argue', 'argue_content', 'point_list');
+    render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/argue.php'], $data);
 }
 function action_install()
 {
@@ -73,12 +77,14 @@ function action_ajax_do()
     if (!function_exists($func)) die("no func");
     return $func($_GET['id']);
 }
+// 选边站
 function _action_choose_side($id)
 {
     $argue = find_or_404('argue', $id);
-    list($positive, $negative) = argue_choose_side($argue, $GLOBALS['cur_user'], get_php_input());
-    // 
-    $total = $positive + $negative;
-    $ratios = [round($positive/$total*100),round($negative/$total*100)];
-    echo implode(',',$ratios);
+    $r = argue_choose_side($argue, $GLOBALS['cur_user'], get_php_input());
+    if(is_string($r)) {
+        echo_json(['code'=>1, 'msg'=>$r]);
+    } else {
+        echo_json(['code'=>0, 'data'=>['numbers'=>$r,'ratios'=>_number_to_ratio($r)]]);
+    }
 }
