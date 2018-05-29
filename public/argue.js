@@ -59,6 +59,7 @@ $(function () {
                 $.post('/ajax_do?action=add_point&id=' + id, data, function (ret) {
                     if (ret.code === 0) {
                         that.point_list.push(ret.data);
+                        that.$set(that.point_to_add,side, '');
                     } else {
                         alert(ret.msg);
                     }
@@ -86,10 +87,14 @@ $(function () {
                 var p = $(event.target).parent();
                 var index = p.data('index');
                 var id = this.id;
-                var that = this;
                 this.$set(this.point_edit_mode,index, true);
             },
-
+            edit_point_dismiss: function (event) {
+                var p = $(event.target).parent();
+                var index = p.data('index');
+                var id = this.id;
+                this.$set(this.point_edit_mode, index, false)
+            },
         }
     });
 });

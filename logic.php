@@ -131,28 +131,67 @@ function argue_edit_summary($argue, $cur_user) {
     return $argue_content['summary'][$side];
 }
 
+// 新增观点
 function argue_add_point($argue, $cur_user) {
     $side = _post('side');
     $content = _post('content');
     if ($side==='') die("no side");
     if ($content==='') die("no content");
 
-    $c = [[],[]];
-    $c[$side] = [$cur_user->id,$cur_user->total_up,$content];
-
+    $c = [null,null];
+    $c[$side] = _argue_point_content($content, $cur_user);
     $argue_point = ORM::for_table('argue_point')->create();
+    $argue_point = _argue_point_update($argue_point,$cur_user, $argue,$c);
+
+    $data = [$argue_point->id, $side, $c[$side]];
+    user_log($cur_user->id, $argue->id, 'add_point', json_encode($data));
+
+    // 反对观点息息相关，而且可能在激烈的辩论过程中频繁改变，所以也一起返回
+    $data = $argue_point->as_array();
+    $data['content'] = $c;
+    return $data;
+}
+// 编辑观点
+function argue_edit_point($argue, $cur_user) {
+    $side = _post('side');
+    $content = _post('content');
+    $pid = _post('pid');
+    if ($side==='') die("no side");
+    if ($content==='') die("no content");
+
+    $argue_point = find_or_404('argue_point', $pid);
+    $c = json_decode($argue_point['content'],true);
+    if ($c[$side]) {
+        $old_user = ORM::for_table('user')->find_one($c[$side]['user_id']);
+        if ($old_user->total_up > $cur_user->total_up) {
+            return "您的积分不够编辑";
+        }
+    }
+    $c[$side] = _argue_point_content($content, $cur_user);
+    $argue_point = _argue_point_update($argue_point,$cur_user, $argue,$c);
+
+    $data = [$argue_point->id, $side, $c[$side]];
+    user_log($cur_user->id, $argue->id, 'edit_point', json_encode($data));
+
+    // 反对观点息息相关，而且可能在激烈的辩论过程中频繁改变，所以也一起返回
+    return $c;
+}
+function _argue_point_content($content, $cur_user) {
+    return [
+        'user_id'=>$cur_user->id,
+        'name' => $cur_user->nickname ? $cur_user->nickname : $cur_user->name,
+        'total_up'=>$cur_user->total_up,
+        'content'=>$content,
+    ];
+}
+function _argue_point_update($argue_point,$cur_user,$argue,$c)
+{
+    $argue_point->user_id = $cur_user->id;
     $argue_point->argue_id = $argue->id;
     $argue_point->content = json_encode($c);
     $argue_point->updated = sql_timestamp();
     $argue_point->save();
-
-    $id = $argue_point->id;
-    $up = $cur_user->total_up;
-    $data = compact('id', 'side', 'up', 'content');
-    user_log($cur_user->id, $argue->id, 'add_point', json_encode($data));
-
-    // 反对观点息息相关，而且可能在激烈的辩论过程中频繁改变，所以也一起返回
-    return $c;
+    return $argue_point;
 }
 
 /**

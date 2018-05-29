@@ -53,7 +53,6 @@ function action_argue($params)
     argue_number_to_ratio($argue_content);
     $point_list= [['stand'=>0,'content'=>['content'=>'a'],'opposite'=>['content'=>'b']]];
     $point_list = argue_get_point_list(10);
-    $point_list_user = argue_get_point_list_user($point_list);
     $data = compact('argue', 'argue_content', 'point_list', 'point_list_user');
     render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/argue.php'], $data);
 }
