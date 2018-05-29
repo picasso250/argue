@@ -110,7 +110,7 @@ var page_data = {
     <td v-if="index===0" :rowspan="point_list.length+1">论点</td>
     <td>
         <div v-if="point_edit_mode[index]" :data-index="index" data-side="0">
-            <textarea v-model="point['content'][0][2]"></textarea>
+            <div><textarea v-model="point['content'][0].content"></textarea></div>
             <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_point" >提交</a>
             <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="$set(point_edit_mode,index,false)" >取消</a>
         </div>
@@ -118,7 +118,7 @@ var page_data = {
             <pre class="point-view-box">{{ point['content'][0]? point['content'][0][2] : '' }}</pre>
             <div v-if="c=point['content'][0]" class="sm" >拥有者 {{ point_list_user[c[0]].nickname? point_list_user[c[0]].nickname:point_list_user[c[0]].name}}</div>
             <a href="javascript:void(0);" class="sm" v-else >反驳</a>
-            <a href="javascript:void(0);" class="sm" v-if="c && c[1]<=me.total_up" v-on:click="point_edit_mode[index]=true" >编辑</a>
+            <a href="javascript:void(0);" class="sm" v-if="c && c[1]<=me.total_up" v-on:click="prepare_edit_point" >编辑</a>
         </div>
     </td>
     <td>

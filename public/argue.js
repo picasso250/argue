@@ -82,6 +82,13 @@ $(function () {
                     }
                 }, 'json');
             },
+            prepare_edit_point: function (event) {
+                var p = $(event.target).parent();
+                var index = p.data('index');
+                var id = this.id;
+                var that = this;
+                this.$set(this.point_edit_mode,index, true);
+            },
 
         }
     });
