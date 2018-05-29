@@ -48,18 +48,13 @@ function action_argue($params)
 {
     $id = $params[1];
     $argue = ORM::for_table('argue')->find_one($id);
-    // $argue = ['id'=>1,'title' => 'test'];
     $argue_content = json_decode($argue['content'],true);
-    if (!isset($argue_content['summary'])) $argue_content['summary'] = [[],[]];
-    // $argue_content = [
-    //     // 'begin'=>[11,100],'end'=> [22,100],
-    //     'begin_number'=>[100,11],'end_number'=> [22,100],
-    //     'summary'=> ['中文','zz'],
-    // ];
+    if (!isset($argue_content['summary'])) $argue_content['summary'] = [null,null];
     argue_number_to_ratio($argue_content);
     $point_list= [['stand'=>0,'content'=>['content'=>'a'],'opposite'=>['content'=>'b']]];
     $point_list = argue_get_point_list(10);
-    $data = compact('argue', 'argue_content', 'point_list');
+    $point_list_user = argue_get_point_list_user($point_list);
+    $data = compact('argue', 'argue_content', 'point_list', 'point_list_user');
     render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/argue.php'], $data);
 }
 function action_install()

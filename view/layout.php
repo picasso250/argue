@@ -51,6 +51,15 @@
     }, false);
     })();
 
+    // https://stackoverflow.com/questions/12503146/create-an-array-with-same-element-repeated-multiple-times
+    function fillArray(value, len) {
+    var arr = [];
+    for (var i = 0; i < len; i++) {
+        arr.push(value);
+    }
+    return arr;
+    }
+
     console.log(<?= $_ENV['DEBUG']?json_encode($_SERVER):0 ?>);
     </script>
 

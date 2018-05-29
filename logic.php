@@ -25,7 +25,25 @@ function login($name,$id_num) {
 // ==== 辩题 ====
 
 function argue_get_point_list($n) {
-    ORM::for_table('argue')->order_by_desc('up_vote');
+    $list = ORM::for_table('argue_point')->order_by_desc('up_vote')->limit($n)->find_many();
+    return array_map(function($e){
+        $e['content'] = json_decode($e['content'],true);
+        return $e->as_array();
+    },$list);
+}
+function argue_get_point_list_user($point_list) {
+    $ids = [];
+    array_map(function($e)use(&$ids){
+        if ($e['content'][0]) $ids[] = $e['content'][0][0];
+        if ($e['content'][1]) $ids[] = $e['content'][1][0];
+        return $ids;
+    },$point_list);
+    $list = ORM::for_table('user')->select(['id','nickname','name'])->where_id_in($ids)->find_array();
+    $kvs = [];
+    foreach ($list as $key => $value) {
+        $kvs[$value['id']] = $value;
+    }
+    return $kvs;
 }
 
 /**
@@ -91,25 +109,56 @@ function argue_edit_summary($argue, $cur_user) {
     if ($side==='') die("no side");
     if ($content==='') die("no content");
     $argue_content = json_decode($argue->content, true);
-    if (!isset($argue_content['summary'])) {
-        $argue_content['summary'] = [[],[]];
-    }
+    if (!isset($argue_content['summary']))
+        $argue_content['summary'] = [null,null];
     if ($argue_content['summary'][$side]) {
-        list($old_user_id, $old_total_up, $_) = $argue_content['summary'][$side];
-        $old_user = ORM::for_table('user')->find_one($old_user_id);
+        $sm = $argue_content['summary'][$side];
+        $old_user = ORM::for_table('user')->find_one($sm->user_id);
         if ($old_user->total_up > $cur_user->total_up) {
             return "您的积分不够编辑";
         }
     }
-    $argue_content['summary'][$side] = [$cur_user->id,$cur_user->total_up,$content];
+    $argue_content['summary'][$side] = [
+        'user_id' => $cur_user->id,
+        'name' => $cur_user->nickname ? $cur_user->nickname : $cur_user->name,
+        'total_up' => $cur_user->total_up,
+        'content' => $content,
+    ];
     $argue->content = json_encode($argue_content);
     $argue->save();
 
-    $up = $cur_user->total_up;
-    user_log($cur_user->id, $argue->id, 'edit_summary', json_encode(compact('side', 'up', 'content')));
+    user_log($cur_user->id, $argue->id, 'edit_summary', json_encode($argue_content['summary'][$side]));
     return $argue_content['summary'][$side];
 }
 
+function argue_add_point($argue, $cur_user) {
+    $side = _post('side');
+    $content = _post('content');
+    if ($side==='') die("no side");
+    if ($content==='') die("no content");
+
+    $c = [[],[]];
+    $c[$side] = [$cur_user->id,$cur_user->total_up,$content];
+
+    $argue_point = ORM::for_table('argue_point')->create();
+    $argue_point->argue_id = $argue->id;
+    $argue_point->content = json_encode($c);
+    $argue_point->updated = sql_timestamp();
+    $argue_point->save();
+
+    $id = $argue_point->id;
+    $up = $cur_user->total_up;
+    $data = compact('id', 'side', 'up', 'content');
+    user_log($cur_user->id, $argue->id, 'add_point', json_encode($data));
+
+    // 反对观点息息相关，而且可能在激烈的辩论过程中频繁改变，所以也一起返回
+    return $c;
+}
+
+/**
+ * 记录用户动作
+ * 这个网站上的一切操作都是有据可查的（撕逼网站，不得不如此）
+ */
 function user_log($user_id,$argue_id,$action,$data) {
     $l = ORM::for_table('user_log')->create();
     $l->user_id = $user_id;

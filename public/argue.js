@@ -1,5 +1,9 @@
 
 $(function () {
+    page_data.uid = 0; // tmp
+    page_data.c = []; // tmp
+    page_data.point_edit_mode = fillArray(false,page_data.point_list.length); // tmp
+
     var app = new Vue({
         el: '#point_table',
         data: page_data,
@@ -18,15 +22,15 @@ $(function () {
             },
             prepare_edit_summary: function (event) {
                 var side = $(event.target).parent().data('side');
-                console.log(side, "0", 0)
-                if (this.summary[side].length === 0 || this.summary[side][1] <= this.me.total_up)
+                if (this.summary[side] === null || this.summary[side].total_up <= this.me.total_up) {
+                    if (this.summary[side] === null) this.summary[side] = {content:''};
                     this.$set(this.summary_edit_mode, side, true);
-                else
+                } else
                     alert('您的积分不够编辑');
             },
             edit_summary: function (event) {
                 var side = $(event.target).parent().data('side');
-                var content = this["summary"][side][2];
+                var content = this["summary"][side].content;
                 if (content.trim().length === 0) alert('综述不能为空');
                 var data = {
                     side: side,
@@ -42,7 +46,43 @@ $(function () {
                         alert(ret.msg);
                     }
                 }, 'json');
-            }
+            },
+            // 增加观点
+            add_point: function (event) {
+                var side = $(event.target).data('side');
+                var id = this.id;
+                var data = {
+                    side: side,
+                    content: this.point_to_add[side],
+                };
+                var that = this;
+                $.post('/ajax_do?action=add_point&id=' + id, data, function (ret) {
+                    if (ret.code === 0) {
+                        that.point_list.push(ret.data);
+                    } else {
+                        alert(ret.msg);
+                    }
+                }, 'json');
+            },
+            edit_point: function (event) {
+                var p = $(event.target).parent();
+                var side = p.data('side');
+                var index = p.data('index');
+                var id = this.id;
+                var data = {
+                    side: side,
+                    content: this.point_to_add[side],
+                };
+                var that = this;
+                $.post('/ajax_do?action=add_point&id=' + id, data, function (ret) {
+                    if (ret.code === 0) {
+                        that.point_list.push(ret.data);
+                    } else {
+                        alert(ret.msg);
+                    }
+                }, 'json');
+            },
+
         }
     });
 });

@@ -1,6 +1,6 @@
 <style>
 .point-view-box{
-    border: 1px solid;
+    /* border: 1px solid; */
 }
 .positive-bar {
     width:100%;
@@ -41,6 +41,9 @@ var page_data = {
             'end': <?= json_encode($argue_content['end']) ?>,
             summary_edit_mode: [false,false],
             summary: <?= json_encode($argue_content['summary']) ?>,
+            point_list: <?= json_encode($point_list) ?>,
+            point_to_add: [],
+            point_list_user: <?= json_encode($point_list_user) ?>,
         };
 </script>
 <script src="/argue.js"></script>
@@ -78,41 +81,60 @@ var page_data = {
 <td>综述</td>
 <td>
     <div v-if="!(summary_edit_mode[0])" data-side="0">
-        <pre>{{ summary[0]? summary[0][2] : '' }}</pre>
+        <pre>{{ summary[0]? summary[0].content : '' }}</pre>
+        <div v-if="summary[0]" class="sm" >拥有者 {{ summary[0].name }}</div>
         <a href="javascript:void(0);" class="sm" v-on:click="prepare_edit_summary">编辑</a>
     </div>
     <div v-else data-side="0">
-        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[0][2]"></textarea></div>
+        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[0].content"></textarea></div>
         <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_summary" >提交</a>
         <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="$set(summary_edit_mode,0,false)" >取消</a>
     </div>
 </td>
 <td>
     <div v-if="!(summary_edit_mode[1])" data-side="1">
-        <pre>{{ summary[1]? summary[1][2] : '' }}</pre>
+        <pre>{{ summary[1]? summary[1].content : '' }}</pre>
+        <div v-if="summary[1]" class="sm" >拥有者 {{ summary[1].name }}</div>
         <a href="javascript:void(0);" class="sm" v-on:click="prepare_edit_summary">编辑</a>
     </div>
     <div v-else data-side="1">
-        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[1][2]"></textarea></div>
+        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[1].content"></textarea></div>
         <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_summary" >提交</a>
         <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="$set(summary_edit_mode,1,false)" >取消</a>
     </div>
 </td>
 </tr>
 
-<?php /* 论点 */ foreach ($point_list as $key => $point): ?>
-<tr>
-    <?php if ($key==0):?> <td rowspan="<?= count($point_list) ?>">论点</td> <?php endif ?>
+<?php /* 论点 */ ?>
+<tr v-for="(point, index) in point_list">
+    <td v-if="index===0" :rowspan="point_list.length+1">论点</td>
     <td>
-        <p><?= $point['stand'] == 0 ? ('论点 '.($key+1)) : '反驳' ?></p>
-        <div class="point-view-box"><?= htmlspecialchars($point['stand'] == 0 ? $point['content']['content'] : $point['opposite']['content']) ?></div>
+        <div v-if="point_edit_mode[index]" :data-index="index" data-side="0">
+            <textarea v-model="point['content'][0][2]"></textarea>
+            <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_point" >提交</a>
+            <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="$set(point_edit_mode,index,false)" >取消</a>
+        </div>
+        <div v-else :data-index="index">
+            <pre class="point-view-box">{{ point['content'][0]? point['content'][0][2] : '' }}</pre>
+            <div v-if="c=point['content'][0]" class="sm" >拥有者 {{ point_list_user[c[0]].nickname? point_list_user[c[0]].nickname:point_list_user[c[0]].name}}</div>
+            <a href="javascript:void(0);" class="sm" v-else >反驳</a>
+            <a href="javascript:void(0);" class="sm" v-if="c && c[1]<=me.total_up" v-on:click="point_edit_mode[index]=true" >编辑</a>
+        </div>
     </td>
     <td>
-        <p><?= $point['stand'] == 1 ? ('论点 '.($key+1)) : '反驳' ?></p>
-        <div class="point-view-box"><?= htmlspecialchars($point['stand'] == 1 ? $point['content']['content'] : $point['opposite']['content']) ?></div>
+        <div class="point-view-box">{{ point['content'][1]? point['content'][1][2] : '' }}</div>
     </td>
 </tr>
-<?php endforeach ?>
+<tr>
+    <td v-if="point_list.length===0" :rowspan="point_list.length+1">论点</td>
+    <td >
+        <div><textarea v-model="point_to_add[0]"></textarea></div>
+        <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="add_point" data-side=0 >添加论点</a>
+    </td>
+    <td >
+        <textarea></textarea>
+    </td>
+</tr>
 
 <tr class="value-bar">
 <td>结束观点</td>
