@@ -58,7 +58,7 @@ function action_argue($params)
     // ];
     argue_number_to_ratio($argue_content);
     $point_list= [['stand'=>0,'content'=>['content'=>'a'],'opposite'=>['content'=>'b']]];
-    // $point_list = argue_get_point_list(10);
+    $point_list = argue_get_point_list(10);
     $data = compact('argue', 'argue_content', 'point_list');
     render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/argue.php'], $data);
 }
@@ -86,6 +86,7 @@ function action_install()
         var_dump($value);
     }
 }
+// 和ajax相关的动作
 function action_ajax_do()
 {
     if (!isset($_GET['action'])) die("no action");
@@ -97,6 +98,8 @@ function action_ajax_do()
     $login_check_list = [
         'choose_side',
         'edit_summary',
+        'argue_add_point',
+        'argue_edit_point',
     ];
     if (in_array($action, $login_check_list)) {
         $cur_user = cur_user();
