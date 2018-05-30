@@ -195,6 +195,35 @@ function _argue_point_update($argue_point,$cur_user,$argue,$c)
     $argue_point->save();
     return $argue_point;
 }
+// 点赞
+function argue_point_up($argue, $cur_user) {
+    $id = _post('id');
+    $side = intval(_post('side'));
+    if (!in_array($side, [0,1])) {
+        // 停止这个页面，并且输出错误信息
+        die("side must be 0 or 1");
+    }
+
+    $data = [
+        'user_id' => $cur_user->id,
+        'point_id' => $id,
+    ];
+    $vote = ORM::for_table()->where($data)->find_one();
+    if ($vote) {
+        if ($vote->side == $side) {
+            // 之前点过赞
+            return "之前点过赞";
+        }
+    }
+    if (!$vote) {
+        $v = ORM::for_table('vote')->create();
+        $v->set($data);
+    }
+    $v->side = $side;
+    $v->created = sql_timestamp();
+    $v->save();
+    return [];
+}
 
 /**
  * 记录用户动作

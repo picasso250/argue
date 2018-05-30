@@ -113,10 +113,11 @@ var page_data = {
             <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_point" >提交</a>
             <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="edit_point_dismiss" >取消</a>
         </div>
-        <div v-else :data-index="index" :data-side="i">
+        <div v-else :data-index="index" :data-side="i" :data-id="point.id">
             <pre class="point-view-box">{{ pc!==null? pc.content : '' }}</pre>
             <div v-if="pc!==null" class="sm" >拥有者 {{ pc.name}}</div>
             <a href="javascript:void(0);" class="sm" v-else v-on:click="prepare_edit_point" >反驳</a>
+            <a href="javascript:void(0);" class="sm" v-if="pc!==null" v-on:click="point_up" >点赞</a>
             <a href="javascript:void(0);" class="sm" v-if="pc===null || pc.total_up<=me.total_up" v-on:click="prepare_edit_point" >编辑</a>
         </div>
     </td>

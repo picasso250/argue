@@ -107,6 +107,26 @@ $(function () {
                 var side = p.data('side');
                 _edit_point_mode_change(this, side, index, false);
             },
+            point_up: function (event) {
+                var p = $(event.target).parent();
+                var side = p.data('side');
+                var index = p.data('index');
+                var id = this.id;
+                var data = {
+                    id: p.data('id'),
+                    side: side,
+                };
+                var that = this;
+                $.post('/ajax_do?action=point_up&id=' + id, data, function (ret) {
+                    if (ret.code === 0) {
+                        // todo
+                        that.$set(that.point_list, index, ret.data);
+                        _edit_point_mode_change(that, side, index, false);
+                    } else {
+                        alert(ret.msg);
+                    }
+                }, 'json');
+            }
         }
     });
 });

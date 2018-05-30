@@ -94,6 +94,7 @@ function action_ajax_do()
         'edit_summary',
         'argue_add_point',
         'argue_edit_point',
+        'point_up',
     ];
     if (in_array($action, $login_check_list)) {
         $cur_user = cur_user();
