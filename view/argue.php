@@ -107,21 +107,18 @@ var page_data = {
 <?php /* 论点 */ ?>
 <tr v-for="(point, index) in point_list">
     <td v-if="index===0" :rowspan="point_list.length+1">论点</td>
-    <td>
-        <div v-if="point_edit_mode[index]" :data-index="index" data-side="0">
-            <div><textarea v-model="point['content'][0].content"></textarea></div>
+    <td v-for="(pc, i) in point.content">
+        <div v-if="point_edit_mode[i][index]" :data-index="index" :data-side="i" :data-id="point.id">
+            <div><textarea v-model="point.content[i].content" style="width:100%" ></textarea></div>
             <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_point" >提交</a>
             <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="edit_point_dismiss" >取消</a>
         </div>
         <div v-else :data-index="index" data-side="0">
-            <pre class="point-view-box">{{ point['content'][0]!==null? point['content'][0].content : '' }}</pre>
-            <div v-if="point['content'][0]!==null" class="sm" >拥有者 {{ point['content'][0].name}}</div>
-            <a href="javascript:void(0);" class="sm" v-else >反驳</a>
-            <a href="javascript:void(0);" class="sm" v-if="point['content'][0]===null || point['content'][0].total_up<=me.total_up" v-on:click="prepare_edit_point" >编辑</a>
+            <pre class="point-view-box">{{ pc!==null? pc.content : '' }}</pre>
+            <div v-if="pc!==null" class="sm" >拥有者 {{ pc.name}}</div>
+            <a href="javascript:void(0);" class="sm" v-else v-on:click="prepare_edit_point" >反驳</a>
+            <a href="javascript:void(0);" class="sm" v-if="pc===null || pc.total_up<=me.total_up" v-on:click="prepare_edit_point" >编辑</a>
         </div>
-    </td>
-    <td>
-        <div class="point-view-box">{{ point['content'][1]? point['content'][1][2] : '' }}</div>
     </td>
 </tr>
 <tr>

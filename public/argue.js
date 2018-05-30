@@ -2,7 +2,15 @@
 $(function () {
     page_data.uid = 0; // tmp
     page_data.c = []; // tmp
-    page_data.point_edit_mode = fillArray(false,page_data.point_list.length); // tmp
+    var p = fillArray(false, page_data.point_list.length);
+    page_data.point_edit_mode = [p,p];
+
+    _edit_point_mode_change = function (that, side, index, val) {
+        // https://stackoverflow.com/questions/45644781/update-value-in-multidimensional-array-in-vue
+        var p = that.point_edit_mode[side].slice(0);
+        p[index] = val;
+        that.$set(that.point_edit_mode, side, p);
+    };
 
     var app = new Vue({
         el: '#point_table',
@@ -72,12 +80,14 @@ $(function () {
                 var id = this.id;
                 var data = {
                     side: side,
-                    content: this.point_to_add[side],
+                    content: this.point_list[index].content[side].content,
+                    pid: p.data('id'),
                 };
                 var that = this;
-                $.post('/ajax_do?action=add_point&id=' + id, data, function (ret) {
+                $.post('/ajax_do?action=edit_point&id=' + id, data, function (ret) {
                     if (ret.code === 0) {
-                        that.point_list.push(ret.data);
+                        that.$set(that.point_list, index, ret.data);
+                        _edit_point_mode_change(that, side, index, false);
                     } else {
                         alert(ret.msg);
                     }
@@ -86,14 +96,16 @@ $(function () {
             prepare_edit_point: function (event) {
                 var p = $(event.target).parent();
                 var index = p.data('index');
-                var id = this.id;
-                this.$set(this.point_edit_mode,index, true);
+                var side = p.data('side');
+                if (this.point_list[index].content[side] === null)
+                    this.point_list[index].content[side] ={ content: '' };
+                _edit_point_mode_change(this, side,index,true);
             },
             edit_point_dismiss: function (event) {
                 var p = $(event.target).parent();
                 var index = p.data('index');
-                var id = this.id;
-                this.$set(this.point_edit_mode, index, false)
+                var side = p.data('side');
+                _edit_point_mode_change(this, side, index, false);
             },
         }
     });

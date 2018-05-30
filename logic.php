@@ -174,7 +174,9 @@ function argue_edit_point($argue, $cur_user) {
     user_log($cur_user->id, $argue->id, 'edit_point', json_encode($data));
 
     // 反对观点息息相关，而且可能在激烈的辩论过程中频繁改变，所以也一起返回
-    return $c;
+    $data = $argue_point->as_array();
+    $data['content'] = $c;
+    return $data;
 }
 function _argue_point_content($content, $cur_user) {
     return [
