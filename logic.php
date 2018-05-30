@@ -210,7 +210,7 @@ function argue_point_up($argue, $cur_user) {
         die("side must be 0 or 1");
     }
 
-    $point = find_or_404();
+    $point = find_or_404('argue_point', $id);
     
     $data = [
         'user_id' => $cur_user->id,
@@ -235,8 +235,8 @@ function argue_point_up($argue, $cur_user) {
     $content[$side]['up_vote']++;
     $point->content = json_encode($content);
 
-    $data = $argue_point->as_array();
-    $data['content'] = $c;
+    $data = $point->as_array();
+    $data['content'] = $content;
     user_log($cur_user->id, $argue->id, 'up_vote', json_encode($data));    
     return $data;
 }

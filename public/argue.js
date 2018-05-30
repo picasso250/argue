@@ -119,9 +119,7 @@ $(function () {
                 var that = this;
                 $.post('/ajax_do?action=point_up&id=' + id, data, function (ret) {
                     if (ret.code === 0) {
-                        // todo
                         that.$set(that.point_list, index, ret.data);
-                        _edit_point_mode_change(that, side, index, false);
                     } else {
                         alert(ret.msg);
                     }
