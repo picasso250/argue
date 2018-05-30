@@ -113,7 +113,7 @@ var page_data = {
             <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_point" >提交</a>
             <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="edit_point_dismiss" >取消</a>
         </div>
-        <div v-else :data-index="index" data-side="0">
+        <div v-else :data-index="index" :data-side="i">
             <pre class="point-view-box">{{ pc!==null? pc.content : '' }}</pre>
             <div v-if="pc!==null" class="sm" >拥有者 {{ pc.name}}</div>
             <a href="javascript:void(0);" class="sm" v-else v-on:click="prepare_edit_point" >反驳</a>
@@ -123,12 +123,9 @@ var page_data = {
 </tr>
 <tr>
     <td v-if="point_list.length===0" :rowspan="point_list.length+1">论点</td>
-    <td >
-        <div><textarea v-model="point_to_add[0]"></textarea></div>
-        <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="add_point" data-side=0 >添加论点</a>
-    </td>
-    <td >
-        <textarea></textarea>
+    <td v-for="(_, i) in [0,1]">
+        <div><textarea v-model="point_to_add[i]"></textarea></div>
+        <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="add_point" :data-side="i" >添加论点</a>
     </td>
 </tr>
 
@@ -146,8 +143,3 @@ var page_data = {
 
 </tbody>
 </table>
-
-
-<?php function _point($stand) { 
-
-}?>
