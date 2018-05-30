@@ -118,6 +118,7 @@ var page_data = {
             <div v-if="pc!==null" class="sm" >拥有者 {{ pc.name}}</div>
             <a href="javascript:void(0);" class="sm" v-else v-on:click="prepare_edit_point" >反驳</a>
             <a href="javascript:void(0);" class="sm" v-if="pc!==null" v-on:click="point_up" >点赞</a>
+            <span v-if="pc !== null" >{{pc.up_vote}} 人点赞</span>
             <a href="javascript:void(0);" class="sm" v-if="pc===null || pc.total_up<=me.total_up" v-on:click="prepare_edit_point" >编辑</a>
         </div>
     </td>

@@ -139,7 +139,7 @@ function argue_add_point($argue, $cur_user) {
     if ($content==='') die("no content");
 
     $c = [null,null];
-    $c[$side] = _argue_point_content($content, $cur_user);
+    $c[$side] = _argue_point_content($content, $cur_user, 0);
     $argue_point = ORM::for_table('argue_point')->create();
     $argue_point = _argue_point_update($argue_point,$cur_user, $argue,$c);
 
@@ -167,7 +167,12 @@ function argue_edit_point($argue, $cur_user) {
             return "您的积分不够编辑";
         }
     }
-    $c[$side] = _argue_point_content($content, $cur_user);
+
+    $up_vote = ORM::for_table('vote')->where([
+        'point_id' => $pid,
+        'side' => $side,
+    ])->count();
+    $c[$side] = _argue_point_content($content, $cur_user, $up_vote);
     $argue_point = _argue_point_update($argue_point,$cur_user, $argue,$c);
 
     $data = [$argue_point->id, $side, $c[$side]];
@@ -178,11 +183,12 @@ function argue_edit_point($argue, $cur_user) {
     $data['content'] = $c;
     return $data;
 }
-function _argue_point_content($content, $cur_user) {
+function _argue_point_content($content, $cur_user, $up_vote) {
     return [
         'user_id'=>$cur_user->id,
         'name' => $cur_user->nickname ? $cur_user->nickname : $cur_user->name,
         'total_up'=>$cur_user->total_up,
+        'up_vote' => $up_vote,
         'content'=>$content,
     ];
 }
@@ -204,11 +210,13 @@ function argue_point_up($argue, $cur_user) {
         die("side must be 0 or 1");
     }
 
+    $point = find_or_404();
+    
     $data = [
         'user_id' => $cur_user->id,
         'point_id' => $id,
     ];
-    $vote = ORM::for_table()->where($data)->find_one();
+    $vote = ORM::for_table('vote')->where($data)->find_one();
     if ($vote) {
         if ($vote->side == $side) {
             // 之前点过赞
@@ -222,7 +230,15 @@ function argue_point_up($argue, $cur_user) {
     $v->side = $side;
     $v->created = sql_timestamp();
     $v->save();
-    return [];
+
+    $content = json_decode($point->content,true);
+    $content[$side]['up_vote']++;
+    $point->content = json_encode($content);
+
+    $data = $argue_point->as_array();
+    $data['content'] = $c;
+    user_log($cur_user->id, $argue->id, 'up_vote', json_encode($data));    
+    return $data;
 }
 
 /**
