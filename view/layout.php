@@ -27,7 +27,6 @@
     // 当用户操作到需要登录的操作时，登录
     $(document).ajaxComplete( function (e,xhr) {
         if (xhr.responseText === 'need_login') {
-            console.log('need_login');
             location.href='/login?back='+encodeURIComponent(location.href);
         }
     });
@@ -63,13 +62,13 @@
     console.log(<?= $_ENV['DEBUG']?json_encode($_SERVER):0 ?>);
     </script>
 
+    <link rel="stylesheet" href="/main.css" >
+
 </head>
 
 <body>
 
-    <div style="margin: 2%;
-    border-bottom: 1px solid;
-    color: #5f5b5b;">
+    <div class="header" style="">
 
         <?php if($GLOBALS['cur_user']): ?>
         <div style="float:right"><?= htmlspecialchars($GLOBALS['cur_user']['name']) ?>(<?= htmlspecialchars($GLOBALS['cur_user']['nickname']) ?>)</div>
@@ -77,7 +76,7 @@
         <div style="float:right"><a href="/login?<?= http_build_query(['back'=>$_SERVER['REQUEST_URI']]) ?>">登录</a></div>
         <?php endif ?>
 
-        <h2 onclick="javascript:location.href='/';" style="cursor:pointer;">辩论网</h2>
+        <h2 onclick="javascript:location.href='/';" style="">辩论网</h2>
     </div>
 
     <div id="conentWrap" style="margin: 2%"><?php include $_inner_tpl_list['content'] ?></div>

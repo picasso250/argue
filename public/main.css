@@ -1,0 +1,21 @@
+/* ==== header for all ==== */
+.header {
+    padding: 1% 2%;
+    border-bottom: 1px solid;
+    color: #dedede;
+    background-color: #464646;
+}
+.header h2 {
+    color: #dedede;
+}
+.header h2:hover {
+    color: #ffffff;
+    cursor:pointer;
+}
+.header a {
+    color: #dedede;
+}
+.header a:hover {
+    color: #ffffff;
+    text-decoration: none;
+}

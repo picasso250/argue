@@ -35,7 +35,7 @@
 
 <script>
 var page_data = {
-            me: <?= json_encode($GLOBALS['cur_user']->as_array()) ?>,
+            me: <?= json_encode($GLOBALS['cur_user']?$GLOBALS['cur_user']->as_array():null) ?>,
             id: <?= $argue['id'] ?>,
             'begin': <?= json_encode($argue_content['begin']) ?>,
             'end': <?= json_encode($argue_content['end']) ?>,
@@ -78,35 +78,24 @@ var page_data = {
 
 <tr>
 <td>综述</td>
-<td>
-    <div v-if="!(summary_edit_mode[0])" data-side="0">
-        <pre>{{ summary[0]? summary[0].content : '' }}</pre>
-        <div v-if="summary[0]" class="sm" >拥有者 {{ summary[0].name }}</div>
-        <a href="javascript:void(0);" class="sm" v-on:click="prepare_edit_summary">编辑</a>
+<td v-for="(_, i) in [0,1]">
+    <div v-if="!(summary_edit_mode[i])" :data-side="i">
+        <pre>{{ summary[i]? summary[i].content : '' }}</pre>
+        <div v-if="summary[i]" class="sm" >拥有者 {{ summary[i].name }}</div>
+        <a href="javascript:void(0);" class="sm"
+            v-if="me!==null" v-on:click="prepare_edit_summary">编辑</a>
     </div>
-    <div v-else data-side="0">
-        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[0].content"></textarea></div>
+    <div v-else :data-side="i">
+        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[i].content"></textarea></div>
         <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_summary" >提交</a>
-        <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="$set(summary_edit_mode,0,false)" >取消</a>
-    </div>
-</td>
-<td>
-    <div v-if="!(summary_edit_mode[1])" data-side="1">
-        <pre>{{ summary[1]? summary[1].content : '' }}</pre>
-        <div v-if="summary[1]" class="sm" >拥有者 {{ summary[1].name }}</div>
-        <a href="javascript:void(0);" class="sm" v-on:click="prepare_edit_summary">编辑</a>
-    </div>
-    <div v-else data-side="1">
-        <div style="width:100%;"><textarea style="width:100%;" v-model="summary[1].content"></textarea></div>
-        <a href="javascript:void(0);" class="btn btn-primary btn-sm" v-on:click="edit_summary" >提交</a>
-        <a href="javascript:void(0);" class="btn btn-light btn-sm" v-on:click="$set(summary_edit_mode,1,false)" >取消</a>
+        <a href="javascript:void(0);" class="btn btn-light btn-sm"   v-on:click="$set(summary_edit_mode,i,false)" >取消</a>
     </div>
 </td>
 </tr>
 
 <?php /* 论点 */ ?>
 <tr v-for="(point, index) in point_list">
-    <td v-if="index===0" :rowspan="point_list.length+1">论点</td>
+    <td v-if="index===0" :rowspan="point_list.length+(me===null?0:1)">论点</td>
     <td v-for="(pc, i) in point.content">
         <div v-if="point_edit_mode[i][index]" :data-index="index" :data-side="i" :data-id="point.id">
             <div><textarea v-model="point.content[i].content" style="width:100%" ></textarea></div>
@@ -116,14 +105,14 @@ var page_data = {
         <div v-else :data-index="index" :data-side="i" :data-id="point.id">
             <pre class="point-view-box">{{ pc!==null? pc.content : '' }}</pre>
             <div v-if="pc!==null" class="sm" >拥有者 {{ pc.name}}</div>
-            <a href="javascript:void(0);" class="sm" v-else v-on:click="prepare_edit_point" >反驳</a>
-            <a href="javascript:void(0);" class="sm" v-if="pc!==null" v-on:click="point_up" >点赞</a>
+            <a href="javascript:void(0);" class="sm" v-if="me!==null&&pc===null" v-on:click="prepare_edit_point" >反驳</a>
+            <a href="javascript:void(0);" class="sm" v-if="me!==null&&pc!==null" v-on:click="point_up" >点赞</a>
             <span v-if="pc !== null" >{{pc.up_vote}} 人点赞</span>
-            <a href="javascript:void(0);" class="sm" v-if="pc===null || pc.total_up<=me.total_up" v-on:click="prepare_edit_point" >编辑</a>
+            <a href="javascript:void(0);" class="sm" v-if="me!==null&&(pc===null || pc.total_up<=me.total_up)" v-on:click="prepare_edit_point" >编辑</a>
         </div>
     </td>
 </tr>
-<tr>
+<tr v-if="me!==null">
     <td v-if="point_list.length===0" :rowspan="point_list.length+1">论点</td>
     <td v-for="(_, i) in [0,1]">
         <div><textarea v-model="point_to_add[i]"></textarea></div>
