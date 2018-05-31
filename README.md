@@ -5,9 +5,8 @@
 
 使用的技术：
 
-- PHP
-- JS
-- Step-PHP
+- PHP (Step-PHP)
+- JS (Vue)
 
 基本功能已经完成。
 需要一个界面设计师。
