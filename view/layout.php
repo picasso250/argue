@@ -77,7 +77,7 @@
         <div style="float:right"><a href="/login?<?= http_build_query(['back'=>$_SERVER['REQUEST_URI']]) ?>">登录</a></div>
         <?php endif ?>
 
-        <h2>辩论网</h2>
+        <h2 onclick="javascript:location.href='/';" style="cursor:pointer;">辩论网</h2>
     </div>
 
     <div id="conentWrap" style="margin: 2%"><?php include $_inner_tpl_list['content'] ?></div>

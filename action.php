@@ -4,9 +4,9 @@ require "logic.php";
 
 function action_index()
 {
-    $debugbar = $GLOBALS['debugbar'];
-    $debugbar["messages"]->addMessage("hello world!");
-    render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/index.php']);
+    $argue_list = argue_get_index_list(100);
+    $data = compact('argue_list');
+    render_with_layout(ROOT_VIEW.'/layout.php', ['content'=>ROOT_VIEW.'/index.php'], $data);
 }
 
 // 登录
@@ -39,6 +39,7 @@ function action_new_argue()
     $argue = ORM::for_table('argue')->create();
     $argue->title = trim($_POST['title']);
     $argue->content = "{}";
+    $argue->updated = sql_timestamp();
     $argue->save();
     redirect("/a/$argue->id");
 }

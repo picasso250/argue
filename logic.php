@@ -24,6 +24,13 @@ function login($name,$id_num) {
 
 // ==== 辩题 ====
 
+function argue_get_index_list($n) {
+    $list = ORM::for_table('argue')->order_by_desc('updated')->limit($n)->find_many();
+    return array_map(function($e){
+        $e['content'] = json_decode($e['content'],true);
+        return $e->as_array();
+    },$list);
+}
 function argue_get_point_list($n) {
     $list = ORM::for_table('argue_point')->order_by_desc('up_vote')->limit($n)->find_many();
     return array_map(function($e){
@@ -174,6 +181,9 @@ function argue_edit_point($argue, $cur_user) {
     ])->count();
     $c[$side] = _argue_point_content($content, $cur_user, $up_vote);
     $argue_point = _argue_point_update($argue_point,$cur_user, $argue,$c);
+
+    $argue->updated = sql_timestamp();
+    $argue->save();
 
     $data = [$argue_point->id, $side, $c[$side]];
     user_log($cur_user->id, $argue->id, 'edit_point', json_encode($data));
