@@ -1,15 +1,15 @@
 <?php
 
+use DebugBar\StandardDebugBar;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Handler\JsonResponseHandler;
+
 define('ROOT', dirname(__DIR__));
 define('ROOT_VIEW', ROOT.'/view');
 
 require ROOT.'/vendor/autoload.php';
 require ROOT.'/lib.php';
 require ROOT.'/action.php';
-
-use DebugBar\StandardDebugBar;
-use Whoops\Handler\PrettyPageHandler;
-use Whoops\Handler\JsonResponseHandler;
 
 $dotenv = new Dotenv\Dotenv(ROOT);
 $dotenv->load();
