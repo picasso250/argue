@@ -19,7 +19,7 @@ if (!is_file($config_file) || !is_readable($config_file))
     die("no config.ini");
 $config = parse_ini_file($config_file);
 
-if ($_ENV['DEBUG']) {
+if (isset($_ENV['DEBUG'])&& $_ENV['DEBUG']) {
     $debugbar = new StandardDebugBar();
     $debugbarRenderer = $debugbar->getJavascriptRenderer();
     $debugbar->addCollector(new DebugBar\DataCollector\ConfigCollector($config));

@@ -88,7 +88,7 @@ function echo_json($json) {
 }
 
 // service
-function _($name, $value = null) {
+function service($name, $value = null) {
     static $lazy;
     static $pool;
     if ($value === null) {
