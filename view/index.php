@@ -8,16 +8,16 @@
     }
 
     .i-eye {
-        font-size: small;
-        text-align: center;
         color: white;
     }
 
     .i-yes {
+        color: white;
         background-color: green;
     }
 
     .i-no {
+        color: white;
         background-color: red;
     }
 
